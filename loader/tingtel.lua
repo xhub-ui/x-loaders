@@ -105,7 +105,7 @@ local function createTitle(character)
     local billboard = Instance.new("BillboardGui")
     billboard.Name = "CustomBillboard"
     billboard.Adornee = head
-    billboard.Size = UDim2.new(0, 400, 0, 80) -- Increased size for VIP status
+    billboard.Size = UDim2.new(0, 400, 0, 20) -- Increased size for VIP status
     billboard.StudsOffset = Vector3.new(0, 3.5, 0)
     billboard.AlwaysOnTop = true
     billboard.MaxDistance = 150
