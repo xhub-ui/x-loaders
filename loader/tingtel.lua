@@ -106,8 +106,7 @@ local function createTitle(character)
     billboard.Name = "CustomBillboard"
     billboard.Adornee = head
     billboard.Size = UDim2.new(0, 400, 0, 30) -- Increased size for VIP status
-	billboard.Position = UDim2.new(0, -3, 0, 75)
-    billboard.StudsOffset = Vector3.new(0, 3.5, 0)
+    billboard.StudsOffset = Vector3.new(0, 2, 0)
     billboard.AlwaysOnTop = true
     billboard.MaxDistance = 150
     billboard.Enabled = true
@@ -121,7 +120,7 @@ local function createTitle(character)
     -- Main TextLabel
     local textLabel = Instance.new("TextLabel")
     textLabel.Size = UDim2.new(1, 0, 0.5, 0)
-    textLabel.Position = UDim2.new(0, 0, 0, 0)
+	textLabel.Position = UDim2.new(0, 0, 0, 0)
     textLabel.BackgroundTransparency = 1
     textLabel.Text = "dsc.gg/xukrost-hub"
     textLabel.TextColor3 = Color3.new(1, 1, 1)
@@ -135,7 +134,7 @@ local function createTitle(character)
     -- VIP Status TextLabel
     local statusLabel = Instance.new("TextLabel")
     statusLabel.Size = UDim2.new(1, 0, 0.3, 0)
-    statusLabel.Position = UDim2.new(0, 0, 0.5, 0)
+    statusLabel.Position = UDim2.new(0, 0, 0.5, 6)
     statusLabel.BackgroundTransparency = 1
     statusLabel.Text = "Player Status: " .. (_G.VIPStatus or "Checking...")
     statusLabel.TextColor3 = isVIP and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 255, 255)
@@ -152,6 +151,7 @@ local function createTitle(character)
     -- Animation variables
     local time = 0
     local animationSpeed = 1.7
+    local loadingStartTime = tick()
     
     -- Color sequence for gradient
     local colorSequence = ColorSequence.new({
@@ -177,9 +177,19 @@ local function createTitle(character)
         
         -- Update status text dengan animasi loading jika masih checking
         if not vipStatusChecked then
-            local loadingTexts = {"Loading...", "Detecting user id", "User id status found"}
-            local loadingIndex = math.floor((time * 2) % 3) + 1
-            statusLabel.Text = "Player Status: " .. loadingTexts[loadingIndex]
+            local currentTime = tick() - loadingStartTime
+            
+            -- Delay untuk setiap tahap loading
+            if currentTime < 1.5 then
+                statusLabel.Text = "Player Status: Loading..."
+            elseif currentTime < 2.0 then
+                statusLabel.Text = "Player Status: Detecting user id"
+            elseif currentTime < 2.3 then
+                statusLabel.Text = "Player Status: User id status found"
+            else
+                -- Setelah 2.3 detik, tetap tampilkan "User id status found" sampai VIP status ter-check
+                statusLabel.Text = "Player Status: User id status found"
+            end
         else
             statusLabel.Text = "Player Status: " .. _G.VIPStatus
             statusLabel.TextColor3 = isVIP and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 255, 255)
