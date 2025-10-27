@@ -119,7 +119,7 @@ local function createTitle(character)
     
     -- Main TextLabel
     local textLabel = Instance.new("TextLabel")
-    textLabel.Size = UDim2.new(1, 0, 0.5, 0)
+	textLabel.Size = UDim2.new(1, 0, 1, -70) 
     textLabel.Position = UDim2.new(0, 0, 0, 0)
     textLabel.BackgroundTransparency = 1
     textLabel.Text = "dsc.gg/xukrost-hub"
