@@ -105,7 +105,7 @@ local function createTitle(character)
     local billboard = Instance.new("BillboardGui")
     billboard.Name = "CustomBillboard"
     billboard.Adornee = head
-    billboard.Size = UDim2.new(0, 400, 0, 120) -- Increased size for VIP status
+    billboard.Size = UDim2.new(0, 400, 0, 80) -- Increased size for VIP status
     billboard.StudsOffset = Vector3.new(0, 3.5, 0)
     billboard.AlwaysOnTop = true
     billboard.MaxDistance = 150
@@ -119,7 +119,7 @@ local function createTitle(character)
     
     -- Main TextLabel
     local textLabel = Instance.new("TextLabel")
-	textLabel.Size = UDim2.new(1, 0, 1, -70) 
+    textLabel.Size = UDim2.new(1, 0, 0.5, 0)
     textLabel.Position = UDim2.new(0, 0, 0, 0)
     textLabel.BackgroundTransparency = 1
     textLabel.Text = "dsc.gg/xukrost-hub"
