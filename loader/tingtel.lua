@@ -44,12 +44,52 @@ local function checkVIPStatus()
     end
 end
 
--- Fungsi untuk hapus nama asli dari karakter lokal
+-- Fungsi untuk hapus nama asli dari karakter lokal dan mencegah kemunculan kembali
 local function removeOriginalNameTags(character)
+    -- Hapus semua BillboardGui yang bukan custom kita
     for _, descendant in ipairs(character:GetDescendants()) do
         if descendant:IsA("BillboardGui") and descendant.Name ~= "CustomBillboard" then
             descendant:Destroy()
         end
+    end
+    
+    -- Nonaktifkan sistem nama default humanoid
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+        humanoid.NameDisplayDistance = 0
+        
+        -- Monitor terus menerus untuk mencegah nama default muncul kembali
+        local nameMonitorConnection
+        nameMonitorConnection = RunService.Heartbeat:Connect(function()
+            if not character or not character.Parent then
+                nameMonitorConnection:Disconnect()
+                return
+            end
+            
+            -- Pastikan setting nama tetap nonaktif
+            if humanoid.DisplayDistanceType ~= Enum.HumanoidDisplayDistanceType.None then
+                humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+            end
+            
+            if humanoid.NameDisplayDistance > 0 then
+                humanoid.NameDisplayDistance = 0
+            end
+            
+            -- Hapus BillboardGui baru yang mungkin dibuat ulang oleh game
+            for _, descendant in ipairs(character:GetDescendants()) do
+                if descendant:IsA("BillboardGui") and descendant.Name ~= "CustomBillboard" then
+                    descendant:Destroy()
+                end
+            end
+        end)
+        
+        -- Cleanup connection ketika karakter dihancurkan
+        character.Destroying:Connect(function()
+            if nameMonitorConnection then
+                nameMonitorConnection:Disconnect()
+            end
+        end)
     end
 end
 
@@ -84,15 +124,15 @@ local function createTitle(character)
     local humanoid = character:FindFirstChildOfClass("Humanoid")
     if not (head and humanoid) then return end
 
-    -- Sembunyikan nama default
+    -- Sembunyikan nama default secara permanen
     humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
     humanoid.NameDisplayDistance = 0
     humanoid.DisplayName = ""
 
     -- Tunggu sedikit untuk memastikan semua GUI original sudah ter-load
-    task.wait(0.1)
+    task.wait(0.2)
     
-    -- Hapus GUI nama asli
+    -- Hapus GUI nama asli secara agresif
     removeOriginalNameTags(character)
 
     -- Hapus title lama jika ada
@@ -151,7 +191,6 @@ local function createTitle(character)
     -- Animation variables
     local time = 0
     local animationSpeed = 1.7
-    local loadingStartTime = tick()
     
     -- Color sequence for gradient
     local colorSequence = ColorSequence.new({
@@ -177,19 +216,9 @@ local function createTitle(character)
         
         -- Update status text dengan animasi loading jika masih checking
         if not vipStatusChecked then
-            local currentTime = tick() - loadingStartTime
-            
-            -- Delay untuk setiap tahap loading
-            if currentTime < 1.5 then
-                statusLabel.Text = "Player Status: Loading..."
-            elseif currentTime < 2.0 then
-                statusLabel.Text = "Player Status: Detecting user id"
-            elseif currentTime < 2.3 then
-                statusLabel.Text = "Player Status: User id status found"
-            else
-                -- Setelah 2.3 detik, tetap tampilkan "User id status found" sampai VIP status ter-check
-                statusLabel.Text = "Player Status: User id status found"
-            end
+            local loadingTexts = {"Loading...", "Detecting user id", "User id status found"}
+            local loadingIndex = math.floor((time * 2) % 3) + 1
+            statusLabel.Text = "Player Status: " .. loadingTexts[loadingIndex]
         else
             statusLabel.Text = "Player Status: " .. _G.VIPStatus
             statusLabel.TextColor3 = isVIP and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 255, 255)
