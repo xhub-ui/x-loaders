@@ -19,8 +19,8 @@ local CheckPoints = {
 
 -- Delay khusus untuk setiap segment
 local SegmentDelays = {
-    ["Spawn -> Pos - 1"] = 15,
-    ["Pos - 1 -> Pos - 2"] = 12,
+    ["Spawn -> Pos - 1"] = 17,
+    ["Pos - 1 -> Pos - 2"] = 14,
     ["Pos - 2 -> Pos - 3"] = 18,
     ["Pos - 3 -> Pos - 4"] = 11,
     ["Pos - 4 -> Pos - 5"] = 38,
